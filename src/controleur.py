@@ -1,6 +1,6 @@
 import json
 from PyQt6.QtWidgets import QFileDialog
-from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtCore import QCoreApplication, QTimer
 from modele.grille import Grille
 
 # Classe représentant le contrôleur de l'application (Architecture MVC)
@@ -12,10 +12,33 @@ class Controleur:
         self.cases_fixes = set()                
         self.vue_principale = None              
         self.en_cours_de_resolution = False
+        
+        # Attributs requis pour le suivi et la gestion du temps
+        self.temps_ecoule = 0
+        self.timer = None
 
     def set_vue(self, vue):
         # Permet d'associer la vue principale au contrôleur après son instanciation
         self.vue_principale = vue
+
+    # Méthode d'initialisation et d'activation du chronomètre
+    def demarrer_timer(self):
+        if self.timer is None:
+            self.timer = QTimer()
+            self.timer.timeout.connect(self.actualiser_timer)
+        self.temps_ecoule = 0
+        self.timer.start(1000) # Se déclenche toutes les 1000 ms (1 seconde)
+        if self.vue_principale:
+            self.vue_principale.changer_affichage_timer("Temps : 00:00")
+
+    # Slot appelé à chaque seconde par le QTimer
+    def actualiser_timer(self):
+        self.temps_ecoule += 1
+        minutes = self.temps_ecoule // 60
+        secondes = self.temps_ecoule % 60
+        format_temps = f"Temps : {minutes:02d}:{secondes:02d}"
+        if self.vue_principale:
+            self.vue_principale.changer_affichage_timer(format_temps)
 
     def sauvegarder_partie(self):
         # Si aucune grille n'est chargée, on annule l'action
@@ -62,7 +85,7 @@ class Controleur:
             # Réinitialisation de l'ensemble des cases verrouillées
             self.cases_fixes.clear() 
             
-            # Identification des cases de départ  pour bloquer leur saisie par le joueur
+            # Identification des cases de départ pour bloquer la saisie
             for nom_motif, liste_cases in donnees.items():
                 for case in liste_cases:
                     x, y, valeur = case[0], case[1], case[2]
@@ -81,6 +104,9 @@ class Controleur:
                 self.vue_principale.changer_message_statut("Partie en cours...", "#555555")
                 if self.vue_principale.vue_grille:
                     self.vue_principale.vue_grille.rafraichir_affichage()
+            
+            # Déclenchement automatique du chronomètre au chargement du niveau
+            self.demarrer_timer()
 
     def get_valeur_case(self, x, y):
         # Récupère la valeur numérique d'une case
@@ -106,6 +132,9 @@ class Controleur:
         
         # Déclenchement de la victoire si la grille est totalement remplie et valide
         if len(self.grille.cases_vides()) == 0 and self.grille.est_valide():
+            # Arrêt du chrono en cas de victoire manuelle du joueur
+            if self.timer:
+                self.timer.stop()
             if self.vue_principale:
                 self.vue_principale.changer_message_statut("Victoire!", "green")
 
@@ -153,6 +182,10 @@ class Controleur:
         if not self.grille or self.en_cours_de_resolution:
             return
             
+        #On fige le chronomètre car c'est le solveur qui prend la main
+        if self.timer:
+            self.timer.stop()
+
         self.en_cours_de_resolution = True
         # Désactivation de la fenêtre principale pendant la recherche pour bloquer les entrées clavier/souris
         if self.vue_principale:
@@ -166,7 +199,7 @@ class Controleur:
                 if (x, y) not in self.cases_fixes:
                     self.grille.set_valeur(x, y, 0)
         
-        # Collecte et tri des cases vides par taille de motif (optimisation heuristique)
+        # Collecte et tri des cases vides par taille de motif
         liste_cases_vides = self.grille.cases_vides()
         liste_cases_vides.sort(key=lambda c: self.grille.get_motif_de_case(c["x"], c["y"]).get_n())
         
@@ -184,7 +217,7 @@ class Controleur:
             if self.vue_principale:
                 self.vue_principale.changer_message_statut("Aucune solution trouvée pour cette configuration.", "red")
                 
-        # Réactivation complète de l'IHM
+        # Réactivation de l'IHM
         if self.vue_principale:
             self.vue_principale.setEnabled(True)
         self.en_cours_de_resolution = False
@@ -229,6 +262,9 @@ class Controleur:
                 if (x, y) not in self.cases_fixes:
                     self.grille.set_valeur(x, y, 0)
         
+        # On réinitialise et on fait repartir le chrono à 0
+        self.demarrer_timer()
+
         # Rafraîchissement visuel et mise à jour du texte de statut de la fenêtre principale
         if self.vue_principale:
             self.vue_principale.changer_message_statut("Grille réinitialisée.", "#555555")

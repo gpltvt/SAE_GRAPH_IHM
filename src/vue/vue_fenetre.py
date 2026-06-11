@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QLabel
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PyQt6.QtCore import Qt
 from vue.vue_grille import VueGrille
 
@@ -10,9 +10,8 @@ class FenetrePrincipale(QMainWindow):
         # Configuration du titre de la fenêtre
         self.setWindowTitle("Néonaure - Jeu de Grille")
         
-        #Barre d'outils
+        # Barre d'outils
         barre_menu = self.menuBar()
-        
         menu_fichier = barre_menu.addMenu("Fichier")
         
         action_charger = menu_fichier.addAction("Charger une grille")
@@ -33,9 +32,23 @@ class FenetrePrincipale(QMainWindow):
         layout_principal = QVBoxLayout()
         layout_principal.setSpacing(15)  
         
+        #Création un conteneur d'une largeur fixe identique à la grille (500px)
+        widget_haut = QWidget()
+        widget_haut.setFixedWidth(500) # Aligné sur les 8 * 60 + 20 pixels de VueGrille
+        
+        layout_haut = QHBoxLayout(widget_haut)
+        layout_haut.setContentsMargins(0, 0, 0, 0) # Supprime les marges internes pour coller aux bords de la grille
+        
         self.label_statut = QLabel("Veuillez charger une grille pour commencer")
-        self.label_statut.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_statut.setStyleSheet("font-size: 13px; font-weight: bold; color: #555555;")
+        
+        self.label_timer = QLabel("Temps : 00:00")
+        self.label_timer.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.label_timer.setStyleSheet("font-size: 13px; font-weight: bold; color: #007BFF;")
+        
+        # Assemblage de la ligne du haut
+        layout_haut.addWidget(self.label_statut)
+        layout_haut.addWidget(self.label_timer)
         
         self.vue_grille = VueGrille(self.controleur)
         
@@ -44,12 +57,12 @@ class FenetrePrincipale(QMainWindow):
         self.label_credits.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_credits.setStyleSheet("font-size: 10px; color: #888888; font-style: italic; margin-top: 5px;")
         
-        # Assemblage des composants du haut vers le bas
-        layout_principal.addWidget(self.label_statut)
-        layout_principal.addWidget(self.vue_grille)
-        layout_principal.addWidget(self.label_credits)
+        #Ajout des widgets dans le layout principal en les centrant explicitement
+        layout_principal.addWidget(widget_haut, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout_principal.addWidget(self.vue_grille, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout_principal.addWidget(self.label_credits, alignment=Qt.AlignmentFlag.AlignCenter)
         
-        # Application du layout à la zone centrale
+        #Application du layout à la zone centrale
         zone_centrale.setLayout(layout_principal)
         self.setCentralWidget(zone_centrale)
 
@@ -58,3 +71,7 @@ class FenetrePrincipale(QMainWindow):
         if hasattr(self, 'label_statut') and self.label_statut:
             self.label_statut.setText(texte)
             self.label_statut.setStyleSheet(f"font-size: 13px; font-weight: bold; color: {couleur};")
+
+    def changer_affichage_timer(self, texte):
+        if hasattr(self, 'label_timer') and self.label_timer:
+            self.label_timer.setText(texte)
