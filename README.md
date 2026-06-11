@@ -34,3 +34,6 @@ git clone https://github.com/gpltvt/SAE_GRAPH_IHM.git
 * **Solveur automatique:** algorithme de Backtracking récursif qui analyse/trie les cases vides par taille de motif pour accélérer la résolution.
 * **Contrôle de flux:** intégration de processEvents() pour éviter le plantage.
 * **Réinitialisation de la grille:** permet de vider la grille sans effacer les cases fixées du départ.
+
+## Bonus apporté:
+* **Timer:** ajout d'un timer pour chronométrer la partir du joueur.
