@@ -3,8 +3,8 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 from vue.vue_grille import VueGrille
 
-class FenetrePrincipale(QMainWindow):
-    def __init__(self, controleur):
+class FenetrePrincipale(QMainWindow): #la class fenetre principale
+    def __init__(self, controleur): #Initialise la fenetre principale avec le contrôleur
         super().__init__()
         self.controleur = controleur
         

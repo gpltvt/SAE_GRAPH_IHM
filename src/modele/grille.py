@@ -1,4 +1,6 @@
-from motif import Motif
+#-*- coding: utf-8 -*-
+
+from modele.motif import Motif
 
 class Grille: # Classe Grille représente la grille 8x8 composee de motifs 
 
