@@ -8,8 +8,7 @@ class FenetrePrincipale(QMainWindow): #la class fenetre principale
         super().__init__()
         self.controleur = controleur
         
-        self.setWindowTitle("NÃ©onaure - Jeu de Grille")
-        self.resize(520, 580)
+        self.setWindowTitle("Néaunore- Jeu de Grille")
         
         barre_menu = self.menuBar()
         menu_fichier = barre_menu.addMenu("Fichier")
