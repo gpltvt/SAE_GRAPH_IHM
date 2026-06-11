@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout
-from vue_grille import VueGrille
+from vue.vue_grille import VueGrille
 
 class FenetrePrincipale(QMainWindow):
     def __init__(self, controleur):
@@ -7,7 +9,7 @@ class FenetrePrincipale(QMainWindow):
         self.controleur = controleur
         
         self.setWindowTitle("NÃ©onaure - Jeu de Grille")
-        self.resize(650, 550)
+        self.resize(520, 580)
         
         barre_menu = self.menuBar()
         menu_fichier = barre_menu.addMenu("Fichier")
