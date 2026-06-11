@@ -36,4 +36,4 @@ git clone https://github.com/gpltvt/SAE_GRAPH_IHM.git
 * **Réinitialisation de la grille:** permet de vider la grille sans effacer les cases fixées du départ.
 
 ## Bonus apporté:
-* **Timer:** ajout d'un timer pour chronométrer la partir du joueur.
+* **Timer:** ajout d'un timer pour chronométrer la partie du joueur.
