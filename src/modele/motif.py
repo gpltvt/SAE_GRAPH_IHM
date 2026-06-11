@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 class Motif: # Classe Motif représentant un groupe de cases devant contenir les valeurs 1 à N sans répétition
     def __init__(self, nom, liste_cases): # Initialise le motif avec son nom et la liste de ses cases
         self.nom = nom
