@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QFileDialog
 from PyQt6.QtCore import QCoreApplication, QTimer
 from modele.grille import Grille
 
-# Classe représentant le contrôleur de l'application (Architecture MVC)
+# Classe du contrôleur de l'application 
 # Elle fait le lien entre le modèle et la vue 
 class Controleur:
     def __init__(self):
@@ -13,25 +13,24 @@ class Controleur:
         self.vue_principale = None              
         self.en_cours_de_resolution = False
         
-        # Attributs requis pour le suivi et la gestion du temps
+        # Attributs pour le suivi et la gestion du temps
         self.temps_ecoule = 0
         self.timer = None
 
-    def set_vue(self, vue):
-        # Permet d'associer la vue principale au contrôleur après son instanciation
+    def set_vue(self, vue):      # Fait le lien entre la vue et le contrôleur
         self.vue_principale = vue
 
-    # Méthode d'initialisation et d'activation du chronomètre
+    # Initialisation et activation du chronomètre
     def demarrer_timer(self):
         if self.timer is None:
             self.timer = QTimer()
             self.timer.timeout.connect(self.actualiser_timer)
         self.temps_ecoule = 0
-        self.timer.start(1000) # Se déclenche toutes les 1000 ms (1 seconde)
+        self.timer.start(1000) # Se déclenche toutes les 1000 ms 1seconde en gros
         if self.vue_principale:
             self.vue_principale.changer_affichage_timer("Temps : 00:00")
 
-    # Slot appelé à chaque seconde par le QTimer
+    # Appelé à chaque seconde par le QTimer
     def actualiser_timer(self):
         self.temps_ecoule += 1
         minutes = self.temps_ecoule // 60
@@ -40,46 +39,43 @@ class Controleur:
         if self.vue_principale:
             self.vue_principale.changer_affichage_timer(format_temps)
 
-    def sauvegarder_partie(self):
-        # Si aucune grille n'est chargée, on annule l'action
+    def sauvegarder_partie(self):  # Si aucune grille n'est chargée on annule
         if not self.grille:
             return
-            
+
         # Ouverture de l'explorateur pour choisir l'emplacement et le nom du fichier de sauvegarde
         fichier, _ = QFileDialog.getSaveFileName(
             self.vue_principale, "Sauvegarder la grille", "", "Fichiers JSON (*.json)"
         )
-        
+
         if fichier:
             donnees = {}
-            # Parcours de tous les motifs pour extraire l'état actuel de la grille
+            # On parcourt tous les motifs pour extraire l'état actuel de la grille
             for motif in self.grille.get_motifs():
                 liste_cases = []
                 for case in motif.get_cases():
                     x, y = case["x"], case["y"]
-                    # Détermination si la case fait partie des indices fixés du départ
+                    # On regarde si la case fait partie des indices fixés du départ
                     est_fixe = (x, y) in self.cases_fixes
-                    # Stockage des coordonnées, de la valeur actuelle et de la nature de la case
+                    # On stocke les coordonnées, de la valeur actuelle et de la nature de la case
                     liste_cases.append([x, y, case["valeur"], est_fixe])
                 donnees[motif.nom] = liste_cases
-            
+            # On écrit dans le fichier JSON
             with open(fichier, 'w', encoding='utf-8') as f:
                 json.dump(donnees, f, indent=4)
-                
+
             # Mise à jour du message de statut dans l'IHM
             if self.vue_principale:
                 self.vue_principale.changer_message_statut("Grille sauvegardée.", "#555555")
 
-    def charger_partie(self):
-        # Ouverture de l'explorateur pour sélectionner un fichier de grille JSON valide
+    def charger_partie(self): # Ouverture de l'explorateur pour sélectionner un fichier de grille JSON valide
         fichier, _ = QFileDialog.getOpenFileName(
             self.vue_principale, "Charger une grille", "", "Fichiers JSON (*.json)"
         )
-        if fichier:
-            # Lecture et décodage du fichier JSON
+        if fichier: # Lecture et décodage du fichier JSON
             with open(fichier, 'r', encoding='utf-8') as f:
                 donnees = json.load(f)
-            
+
             # Instanciation d'une nouvelle grille dans le modèle avec les données lues
             self.grille = Grille(donnees)
             # Réinitialisation de l'ensemble des cases verrouillées
@@ -187,7 +183,7 @@ class Controleur:
             self.timer.stop()
 
         self.en_cours_de_resolution = True
-        # Désactivation de la fenêtre principale pendant la recherche pour bloquer les entrées clavier/souris
+        # Désactivation de la fenêtre principale pendant la recherche pour bloquer les entrées
         if self.vue_principale:
             self.vue_principale.setEnabled(False)
             self.vue_principale.changer_message_statut("Résolution automatique en cours...", "orange")
@@ -238,10 +234,10 @@ class Controleur:
         motif = self.grille.get_motif_de_case(x, y)
         n = motif.get_n()
         
-        # Boucle itérative testant les candidats possibles pour cette case
+        # Boucle itérative testant les valeurs possibles pour cette case
         for v in range(1, n + 1):
             self.grille.set_valeur(x, y, v)
-            # Si le candidat respecte les règles, on explore récursivement la case suivante
+            # Si la valeur respecte les règles, on explore récursivement la case suivante
             if self.case_est_valide(x, y):
                 if self._backtracking_opt(cases_vides, index + 1):
                     return True 
