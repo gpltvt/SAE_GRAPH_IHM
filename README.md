@@ -21,11 +21,13 @@ git clone https://github.com/gpltvt/SAE_GRAPH_IHM.git
 ## Avancées du projet:
 * **Architecture MVC:** séparation entre le modèle de données et les vues.
 * **Détection de la victoire:** validation dès que la grille est complète et correcte.
+* **Identité visuelle:** thème cohérent sur l'ensemble de l'application.
 
 ## Interface graphique:
 * **Grille:** rendu visuel en mettant en évidence les contours et bordures.
 * **Assistance visuelle:** les cases de départ sont fixées et légèrement plus sombres. Les cases incorrectes passent en rouge. La case sélectionnée est mise en valeur.
 * **Barre des menus:** intégration des actions de fichiers et de grille
+* **Thème visuel:** interface stylisée avec un thème néon violet-cyan sur fond sombre. Les bordures de motifs sont en violet, les cases fixes affichent un texte violet néon. Les valeurs saisies par l'utilisateur sont cyan. 
 
 ## Gestion des données:
 * **Chargement et sauvegarde:** importation et exportation possibles au format JSON.
